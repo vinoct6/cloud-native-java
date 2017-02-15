@@ -6,12 +6,16 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Stream;
 
 @SpringBootApplication
@@ -23,6 +27,20 @@ public class ReservationServiceApplication {
 }
 
 
+
+@RestController
+class ReservationController {
+
+    @Autowired
+    private ReservationRepository reservationRepository;
+
+    @RequestMapping(method = RequestMethod.GET,value = "/reservations")
+    public Collection<Reservation> getReservations(){
+        return reservationRepository.findAll();
+    }
+
+}
+
 @Component
 class SampleCLR implements CommandLineRunner {
 
@@ -32,7 +50,7 @@ class SampleCLR implements CommandLineRunner {
     @Override
     public void run(String... strings) throws Exception {
 
-        Stream.of("Vinoth","Saranya","varshyth","kutty","Hooli").forEach(name -> reservationRepository.save(new Reservation(name)));
+        Stream.of("Vinoth kumar","Saranya","varshyth","kutty","Hooli").forEach(name -> reservationRepository.save(new Reservation(name)));
         reservationRepository.findAll().forEach(System.out::println);
     }
 }
