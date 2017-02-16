@@ -3,6 +3,8 @@ package com.example;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
@@ -49,7 +51,7 @@ class SampleCLR implements CommandLineRunner {
     @Override
     public void run(String... strings) throws Exception {
 
-        Stream.of("Vinoth kumar","Saranya","varshyth","kutty","Hooli").forEach(name -> reservationRepository.save(new Reservation(name)));
+        Stream.of("Vinoth kumar", "Saranya", "varshyth", "kutty", "Hooli").forEach(name -> reservationRepository.save(new Reservation(name)));
         reservationRepository.findAll().forEach(System.out::println);
     }
 }
@@ -66,8 +68,25 @@ interface ReservationRepository extends JpaRepository<Reservation, Long> {
      I could create a custom query
      @Query("select r from Reservation r where r.reservationName=:name
      */
-    @RestResource(path="by-name")
+    @RestResource(path = "by-name")
     Collection<Reservation> findByReservationName(@Param("name") String name);
+}
+
+@Component
+class MyIndicator implements HealthIndicator {
+
+    private Health h = Health.status("this is up").build();
+
+    // We can listen to events and change the health
+   /* @Event(FooEvent.class)
+    public void onEvent(FooEvent e){
+            h = Health.down().build();
+    }*/
+
+    @Override
+    public Health health() {
+        return h;
+    }
 }
 
 @Entity
